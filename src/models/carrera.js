@@ -6,7 +6,12 @@ const Carrera = sequelize.define('Carrera',{
         type: DataTypes.INTEGER,
         primaryKey: true,
         allowNull: false,
-        autoIncrement: true
+        unique: true,
+        validate: {
+            notNull:{
+                msg: 'El id de la carrera debe ser proporcionado.'
+            }
+        }
     },
     nombre: {
         type: DataTypes.STRING(50),

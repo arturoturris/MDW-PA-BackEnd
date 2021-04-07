@@ -23,6 +23,14 @@ function buildPersona(body){
     })
 }
 
+function buildUsuario(body){
+    return sequelize.models.Usuario.build({
+        email:body.email,
+        contrasena:body.contrasena,
+        rol:body.rol
+    })
+}
+
 function buildAlumno(body){
     return sequelize.models.Alumno.build({
         matricula: body.matricula,
@@ -88,12 +96,14 @@ function validateAlumno(requestType){
     return async (req,res,next) => {
         let persona =  buildPersona(req.body)
         let alumno = buildAlumno(req.body)
+        let usuario = buildUsuario(req.body)
     
         let validator = new ModelValidator()
 
         try{
             await validator.validate(persona,{skip: ['id_persona']})
             await validator.validate(alumno,{skip: ['id_persona']})
+            await validator.validate(usuario,{skip: ['id_persona']})
             
             if(requestType === 'post'){
                 const matriculaOccupied = await sequelize.models.Alumno.findOne({where: {matricula: alumno.matricula}})
@@ -119,12 +129,15 @@ function validateAlumno(requestType){
 async function createAlumno(req,res){
     let persona =  buildPersona(req.body)
     let alumno = buildAlumno(req.body)
+    let usuario = buildUsuario(req.body)
 
-    try{
+    try{    
         await sequelize.transaction(async t => {
             persona = await persona.save({transaction: t,validate: false})
             alumno.set('id_persona',persona.get('id_persona'))
             await alumno.save({transaction: t,validate: false})
+            usuario.set('id_persona',persona.get('id_persona'))
+            await usuario.save({transaction: t,validate: false})
         })
 
         return res.sendStatus(201)
@@ -138,11 +151,11 @@ async function updateAlumno(req,res){
     try{
         let alumno = await sequelize.models.Alumno.findOne({where: {matricula: req.params.matricula}})
         let persona =  await sequelize.models.Persona.findOne({where: {id_persona: alumno.get('id_persona')}})
-        
+
         await sequelize.transaction(async t => {
             //UPDATING ALUMNO
             await alumno.update({
-                carrera: (req.body.carrera ? req.body.carrera : null)
+                id_carrera: (req.body.id_carrera || null)
             },{
                 transaction: t,
                 validate: false
@@ -158,6 +171,8 @@ async function updateAlumno(req,res){
                 transaction: t,
                 validate: false
             })
+
+            
         })
 
         res.sendStatus(200)

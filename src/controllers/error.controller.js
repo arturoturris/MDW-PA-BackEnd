@@ -1,4 +1,4 @@
-function handleError(res,res,err){
+function handleError(req,res,err){
     
     const errorName = err.name || ''
     let errorObject
@@ -14,6 +14,7 @@ function handleError(res,res,err){
             break
         }
         default:{
+            console.log(err)
             errorObject = err
             break
         }

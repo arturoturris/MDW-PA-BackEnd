@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 const morgan = require('morgan')
+const cors = require('cors')
 const {API_PORT,API_VERSION} = require('./config/config')
 
 //CONFIG

@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken')
 const JWTACCESSSECRET = '12345'
 
 function getAccessToken(user){
-    return jwt.sign(user,JWTACCESSSECRET)
+    return jwt.sign(user,JWTACCESSSECRET,{expiresIn: 60 * 60 * 24})
 }
 
 async function findUser(email){
@@ -47,7 +47,7 @@ async function authenticateUser(req,res){
         rol: usuario.rol
     }
 
-    res.status(200).json({token: getAccessToken(usuario)})  
+    res.json({token: getAccessToken(usuario)})  
 }
 
 function authorizeUser(req,res){

@@ -8,6 +8,7 @@ router.use('/test',cors(),(req,res) => {
 router.use('/alumnos',cors(),require('./alumnos'))
 router.use('/profesores',cors(),require('./profesores'))
 router.use('/carreras',require('./carreras'))
+router.use('/materias',cors(),require('./materias'))
 router.use('/',cors(),require('./login'))
 
 module.exports = router

@@ -65,6 +65,10 @@ Alumno.associate = function(models){
         },
         onDelete: 'SET NULL'
     })
+
+    models.Alumno.belongsToMany(models.Materia,{
+        through: 'carga_academica'
+    })
 }
 
 //  sequelize.sync({force:true}) //SINCRONIZAR BASE DE DATOS

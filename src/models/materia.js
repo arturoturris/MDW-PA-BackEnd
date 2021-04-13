@@ -48,7 +48,7 @@ const Materia = sequelize.define('Materia',{
                msg:"La clave debe ser proporcionada"
            },
            is:{
-                args:/(^)(ITIS|IDDS|ISTI|FGUS|CCOS|ICCS|ISCO)[\d]{3}/,
+                args:/(^)(ITIS|IDDS|ISTI|FGUS|CCOS|ICCS|ISCO)[\d]{3}/i,
                 msg:"La clave de la materia no es valida"
            },
            len:{
@@ -79,25 +79,24 @@ const Materia = sequelize.define('Materia',{
         tableName: 'materia',
         timestamps: false,
         hooks: {
-    
+            beforeSave: (periodo,options) => {
+                periodo.set('nombre',periodo.get('nombre').toUpperCase())
+                periodo.set('clave',periodo.get('clave').toUpperCase())
+            }
         } 
 })
 
 Materia.associate = function(models){
-    models.Materia.belongsTo(models.Periodo,{
+    models.Materia.belongsTo(models.Profesor,{
         foreignKey:{
-            name: 'id_periodo',
+            name: 'profesor',
             allowNull: false
         },
         onDelete: 'CASCADE'
     })
-    
-    models.Materia.belongsTo(models.Profesor,{
-        foreignKey:{
-            name: 'matricula',
-            allowNull: false
-        },
-        onDelete: 'CASCADE'
+
+    models.Materia.belongsToMany(models.Alumno,{
+        through: 'carga_academica'
     })
 }
 

@@ -17,7 +17,7 @@ const Proyecto = sequelize.define('Proyecto',{
                 msg: 'El nombre debe ser proporcionado.'
             },
             len:{
-                args: [5-45],
+                args: [5,45],
                 msg: 'Pocos o demasiados caracteres.'
             }
         }
@@ -57,10 +57,6 @@ const Proyecto = sequelize.define('Proyecto',{
             }
         }
     },
-    // evaluador: {
-    //     type: DataTypes.INTEGER,
-    //     references: sequelize
-    // },
     descripcion:{
         type: DataTypes.STRING(200),
         allowNull: true,
@@ -70,13 +66,75 @@ const Proyecto = sequelize.define('Proyecto',{
                 msg: 'Pocos o demasiados caracteres.'
             }
         }
+    },
+    nrc: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: sequelize.models.Materia,
+            key: 'nrc'
+        },
+        validate: {
+            notNull: {
+                args: true,
+                msg: 'El nrc de la materia debe ser proporcionado.'
+            },
+            async isValid(value) {
+                let materia = await sequelize.models.Materia.findOne({where: {nrc: value}})
+                if(!materia)
+                    throw new Error('No es un nrc válido.')
+            }
+        }
+    },
+    coordinador: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: sequelize.models.Alumno,
+            key: 'matricula'
+        },
+        validate: {
+            notNull: {
+                args: true,
+                msg: 'La matricula del coordinador debe ser proporcionada.'
+            },
+            async isValid(value) {
+                let alumno = await sequelize.models.Alumno.findOne({where: {matricula: value}})
+                if(!alumno)
+                    throw new Error('No existe un alumno con la matricula proporcionada.')
+            }
+        }
     }
 },{
     tableName: 'proyecto',
     timestamps: false,
-    // beforeSave: (proyecto,options) => {
-
-    // }
+    beforeSave: (proyecto,options) => {
+        proyecto.set('nombre_proyecto',proyecto.get('nombre_proyecto').toUpperCase())
+        proyecto.set('descripcion',proyecto.get('descripcion').toUpperCase())
+    }
 })
+
+Proyecto.associate = function(models){
+    models.Proyecto.belongsTo(models.Materia,{
+        foreignKey: {
+            name: 'nrc',
+            allowNull: false
+        },
+        onDelete: 'CASCADE'
+    })
+
+    models.Proyecto.belongsTo(models.Alumno,{
+        foreignKey: {
+            name: 'coordinador',
+            allowNull: false
+        },
+        onDelete: 'CASCADE'
+    })
+    
+    models.Proyecto.belongsToMany(models.Alumno,{
+        through: models.Equipo,
+        foreignKey: 'id_proyecto'
+    })
+}
 
 module.exports = Proyecto

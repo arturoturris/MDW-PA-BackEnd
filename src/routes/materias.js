@@ -4,7 +4,10 @@ const materiasController = require('../controllers/materias.controller')
 
 router.get('/',
     materiasController.getMaterias)
-router.get('/:id_usuario',
+router.get('/:matricula',
     materiasController.findMaterias);
+router.get('/:nrc/lista',
+    materiasController.existsMateria,
+    materiasController.getAlumnosIncritos)
 
 module.exports=router;

@@ -96,7 +96,8 @@ Materia.associate = function(models){
     })
 
     models.Materia.belongsToMany(models.Alumno,{
-        through: 'carga_academica'
+        through: models.CargaAcademica,
+        foreignKey: 'materia_nrc'
     })
 }
 

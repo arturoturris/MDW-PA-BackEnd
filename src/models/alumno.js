@@ -67,10 +67,16 @@ Alumno.associate = function(models){
     })
 
     models.Alumno.belongsToMany(models.Materia,{
-        through: 'carga_academica'
+        through: models.CargaAcademica,
+        foreignKey: 'alumno_matricula'
+    })
+
+    models.Alumno.belongsToMany(models.Proyecto,{
+        through: models.Equipo,
+        foreignKey: 'matricula'
     })
 }
 
-//  sequelize.sync({force:true}) //SINCRONIZAR BASE DE DATOS
+// sequelize.sync({force:true}) //SINCRONIZAR BASE DE DATOS
 
 module.exports = Alumno

@@ -15,6 +15,7 @@ async function findUser(email){
                 'email',
                 'contrasena',
                 'rol',
+                [sequelize.col('Persona.id_persona'),'id_persona'],
                 [sequelize.col('Persona.nombre'),'nombre'],
                 [sequelize.col('Persona.paterno'),'paterno'],
                 [sequelize.col('Persona.materno'),'materno']
@@ -34,6 +35,7 @@ async function findUser(email){
 
 async function authenticateUser(req,res){
     let usuario = await findUser(req.body.email)
+    let matricula = await getMatricula(usuario.id_persona,usuario.rol)
 
     if(!usuario) return res.sendStatus(401)
     
@@ -44,13 +46,40 @@ async function authenticateUser(req,res){
     usuario = {
         id_usuario: usuario.id_usuario,
         nombre: `${usuario.get('nombre')} ${usuario.get('paterno')} ${usuario.get('materno')}`,
-        rol: usuario.rol
+        rol: usuario.rol,
+        ... (matricula && {matricula})
     }
 
     res.json({token: getAccessToken(usuario)})  
 }
 
-function authorizeUser(req,res){
+async function getMatricula(id_persona,tipoUsuario){
+    let model
+
+    switch (tipoUsuario) {
+        case 'ALUMNO':
+            model = sequelize.models.Alumno
+            break;
+        case 'PROFESOR':
+            model = sequelize.models.Profesor
+            break;
+        default:
+            return null
+    }
+
+    const {matricula} = await model.findOne({
+        include: [
+            {
+                model: sequelize.models.Persona,
+                where: {id_persona}
+            }
+        ]
+    })
+
+    return matricula
+}
+
+async function authorizeUser(req,res){
     const header = req.headers['authorization']
     const accessToken = header && header.split(' ')[1]
 
@@ -65,5 +94,6 @@ function authorizeUser(req,res){
 
 module.exports = {
     authenticateUser,
-    authorizeUser
+    authorizeUser,
+    getMatricula
 }

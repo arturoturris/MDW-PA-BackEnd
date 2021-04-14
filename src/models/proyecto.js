@@ -79,4 +79,14 @@ const Proyecto = sequelize.define('Proyecto',{
     // }
 })
 
+Proyecto.associate = function(models){
+    models.Proyecto.belongsTo(models.Materia,{
+        foreignKey:{
+            name: 'nrc',
+            allowNull: false
+        },
+        onDelete: 'CASCADE'
+    })
+}
+
 module.exports = Proyecto

@@ -40,7 +40,7 @@ const Materia = sequelize.define('Materia',{
         },
         
     },
-     clave:{
+    clave:{
        type:DataTypes.STRING,
        allowNull:false,
        validate:{
@@ -99,6 +99,14 @@ Materia.associate = function(models){
         through: models.CargaAcademica,
         foreignKey: 'materia_nrc'
     })
+
+    models.Materia.belongsTo(models.Periodo,{
+        foreignKey:{
+            name: 'id_periodo',
+            allowNull: false
+        },
+        onDelete: 'CASCADE'
+    })  
 }
 
 

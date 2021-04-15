@@ -26,7 +26,7 @@ function buildUsuario(body){
 }
 
 function existsProfesor(req,res,next){
-    sequelize.models.Profesor.findOne({where: {matricula: req.body.matricula}})
+    sequelize.models.Profesor.findOne({where: {matricula: req.params.matricula}})
     .then(profesor => {
         if(profesor)
             next()
@@ -176,6 +176,18 @@ async function deleteProfesor(req,res){
     }
 }
 
+async function getMaterias(req,res){
+    const {matricula} = req.params;
+
+    await sequelize.query(`
+        SELECT materia.nrc, materia.nombre, periodo.nombre as Pnombre FROM periodo
+        INNER JOIN materia ON periodo.id_periodo = materia.id_periodo
+        INNER JOIN profesor ON profesor.matricula = materia.profesor
+        WHERE profesor.matricula=${matricula}`)
+    .then(([result,metadata]) => res.json(result))
+    .catch(error => handleError(req,res,error))
+}
+
 module.exports = {
     getProfesores,
     getProfesor,
@@ -183,5 +195,6 @@ module.exports = {
     existsProfesor,
     createProfesor,
     updateProfesor,
-    deleteProfesor
+    deleteProfesor,
+    getMaterias
 }

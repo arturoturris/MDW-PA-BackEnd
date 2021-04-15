@@ -8,49 +8,55 @@ function getAccessToken(user){
 }
 
 async function findUser(email){
-    try{
-        return await sequelize.models.Usuario.findOne({
-            attributes: [
-                'id_usuario',
-                'email',
-                'contrasena',
-                'rol',
-                [sequelize.col('Persona.id_persona'),'id_persona'],
-                [sequelize.col('Persona.nombre'),'nombre'],
-                [sequelize.col('Persona.paterno'),'paterno'],
-                [sequelize.col('Persona.materno'),'materno']
-            ],
-            include: [
-                {
-                    model: sequelize.models.Persona,
-                    attributes: []
-                }
-            ],
-            where:{email}
-        })
-    }catch(err){
-        return null
-    }
+    return await sequelize.models.Usuario.findOne({
+        attributes: [
+            'id_usuario',
+            'email',
+            'contrasena',
+            'rol',
+            [sequelize.col('Persona.id_persona'),'id_persona'],
+            [sequelize.col('Persona.nombre'),'nombre'],
+            [sequelize.col('Persona.paterno'),'paterno'],
+            [sequelize.col('Persona.materno'),'materno']
+        ],
+        include: [
+            {
+                model: sequelize.models.Persona,
+                attributes: []
+            }
+        ],
+        where:{email}
+    })
 }
 
 async function authenticateUser(req,res){
-    let usuario = await findUser(req.body.email)
-    let matricula = await getMatricula(usuario.id_persona,usuario.rol)
+    try{
+        let usuario = await findUser(req.body.email)
+        let matricula = await getMatricula(usuario.id_persona,usuario.rol)
 
-    if(!usuario) return res.sendStatus(401)
-    
-    const authenticated = await sequelize.models.Usuario.prototype.comparePassword(req.body.contrasena,usuario.contrasena)
+        if(!usuario)
+            return res.sendStatus(401)
+        
+        const authenticated =
+            await sequelize.models.Usuario.prototype.comparePassword(
+                req.body.contrasena,
+                usuario.contrasena
+            )
 
-    if (!authenticated) return res.sendStatus(401)
+        if(!authenticated)
+            return res.sendStatus(401)
 
-    usuario = {
-        id_usuario: usuario.id_usuario,
-        nombre: `${usuario.get('nombre')} ${usuario.get('paterno')} ${usuario.get('materno')}`,
-        rol: usuario.rol,
-        ... (matricula && {matricula})
+        usuario = {
+            id_usuario: usuario.id_usuario,
+            nombre: `${usuario.get('nombre')} ${usuario.get('paterno')} ${usuario.get('materno')}`,
+            rol: usuario.rol,
+            ... (matricula && {matricula})
+        }
+
+        res.json({token: getAccessToken(usuario)})  
+    } catch(err){
+        handleError(req,res,err)
     }
-
-    res.json({token: getAccessToken(usuario)})  
 }
 
 async function getMatricula(id_persona,tipoUsuario){
@@ -67,16 +73,21 @@ async function getMatricula(id_persona,tipoUsuario){
             return null
     }
 
-    const {matricula} = await model.findOne({
-        include: [
-            {
-                model: sequelize.models.Persona,
-                where: {id_persona}
-            }
-        ]
-    })
-
-    return matricula
+    try{
+        const {matricula} = await model.findOne({
+            include: [
+                {
+                    model: sequelize.models.Persona,
+                    where: {id_persona}
+                }
+            ]
+        })
+    
+        return matricula
+        
+    } catch(err){
+        throw err
+    }
 }
 
 async function authorizeUser(req,res){

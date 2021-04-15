@@ -6,6 +6,9 @@ router.get('/',
     profesoresController.getProfesores)
 router.get('/:matricula',
     profesoresController.getProfesor)
+router.get('/:matricula/materias',
+    profesoresController.existsProfesor,
+    profesoresController.getMaterias)
 router.post('/',
     profesoresController.validateProfesor('post'),
     profesoresController.createProfesor)

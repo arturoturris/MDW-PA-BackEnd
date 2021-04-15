@@ -6,6 +6,12 @@ router.get('/',
     alumnosController.getAlumnos)
 router.get('/:matricula',
     alumnosController.getAlumno)
+router.get('/:matricula/proyectos',
+    alumnosController.existsAlumno,
+    alumnosController.getProyectosAlumno)
+router.get('/:matricula/materias',
+    alumnosController.existsAlumno,
+    alumnosController.getMateriasAlumno)
 router.post('/',
     alumnosController.validateAlumno('post'),
     alumnosController.createAlumno)

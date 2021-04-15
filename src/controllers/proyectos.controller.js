@@ -107,9 +107,18 @@ function getProyectosAlumno(req,res){
     .catch(err => errorController.handleError(req,res,err))
 }
 
+async function findDetalles(req,res){
+    const {id_proyecto} = req.params;
+    await 
+    sequelize.query(`SELECT nombre_proyecto,fecha_inicio,fecha_fin,descripcion from proyecto WHERE id_proyecto=${id_proyecto}`)
+    .then(([result,metadata]) => res.json(result))
+    .catch(error => handleError(error))
+}
+
 module.exports = {
     validateProyecto,
     createProyecto,
     getProyectosAlumno,
-    existsAlumno
+    existsAlumno,
+    findDetalles
 }

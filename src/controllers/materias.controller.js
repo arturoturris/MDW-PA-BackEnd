@@ -1,34 +1,10 @@
 const {sequelize} = require('../config/sequelize')
-const errorController = require('./error.controller')
-
-async function findMaterias(req,res){
-    const {matricula} = req.params;
-
-    sequelize.models.Alumno.findOne({
-        include:{
-            model: sequelize.models.Materia,
-            through: {
-                attributes: []
-            }
-        },
-        where: {matricula}
-    })
-    .then(materias => {res.json(materias)})
-    .catch(err => errorController.handleError(req,res,err))
-}
+const {handleError} = require('./error.controller')
 
 function getMaterias(req,res) {
     sequelize.models.Materia.findAll()
     .then(materias => res.json(materias))
-    .catch(err => errorController.handleError(req,res,err))
-}
-
-function getMateriasAlumno(req,res){
-    sequelize.models.Materia.findAll({
-        where: {}
-    })
-    .then(materias => res.json(materias))
-    .catch(err => errorController.handleError(req,res,err))
+    .catch(err => handleError(req,res,err))
 }
 
 async function existsMateria(req,res,next){
@@ -40,7 +16,7 @@ async function existsMateria(req,res,next){
 
         next()
     })
-    .catch(err => errorController.handleError(req,res,err))
+    .catch(err => handleError(req,res,err))
 }
 
 function getAlumnosIncritos(req,res){
@@ -73,12 +49,20 @@ function getAlumnosIncritos(req,res){
         where: {nrc: req.params.nrc}
     })
     .then(lista => res.json(lista))
-    .catch(err => errorController.handleError(req,res,err))
+    .catch(err => handleError(req,res,err))
+}
+
+async function findProyectos(req,res){
+    const {nrc} = req.params;
+    await 
+    sequelize.query(`SELECT DISTINCT proyecto.id_proyecto,proyecto.nombre_proyecto, proyecto.descripcion FROM proyecto INNER JOIN materia ON materia.nrc = materia.nrc INNER JOIN profesor ON materia.profesor = profesor.matricula INNER JOIN usuario ON profesor.id_persona = usuario.id_usuario INNER JOIN persona ON usuario.id_persona = persona.id_persona WHERE proyecto.nrc=${nrc}`)
+    .then(([result,metadata]) => res.json(result))
+    .catch(error => handleError(error))
 }
 
 module.exports = {
     getMaterias,
-    findMaterias,
     getAlumnosIncritos,
-    existsMateria
+    existsMateria,
+    findProyectos
 }

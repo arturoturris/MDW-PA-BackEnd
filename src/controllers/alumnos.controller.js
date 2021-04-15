@@ -92,6 +92,21 @@ function getAlumno(req,res){
     })
 }
 
+function getProyectosAlumno(req,res){
+    sequelize.models.Alumno.findOne({
+        attributes: [
+        ],
+        include: {all:true,nested:true},
+        where: {matricula: req.params.matricula}
+    })
+    .then(async proyectos => {
+        if(!proyectos)
+            return []
+        return await res.json(proyectos.Proyectos)
+    })
+    .catch(err => errorController.handleError(req,res,err))
+}
+
 function validateAlumno(requestType){
     return async (req,res,next) => {
         let persona =  buildPersona(req.body)
@@ -199,6 +214,22 @@ async function deleteAlumno(req,res){
     }
 }
 
+async function getMateriasAlumno(req,res){
+    const {matricula} = req.params;
+
+    sequelize.models.Alumno.findOne({
+        include:{
+            model: sequelize.models.Materia,
+            through: {
+                attributes: []
+            }
+        },
+        where: {matricula}
+    })
+    .then(materias => {res.json(materias)})
+    .catch(err => handleError(req,res,err))
+}
+
 module.exports = {
     getAlumnos,
     getAlumno,
@@ -206,7 +237,9 @@ module.exports = {
     updateAlumno,
     deleteAlumno,
     validateAlumno,
-    existsAlumno
+    existsAlumno,
+    getProyectosAlumno,
+    getMateriasAlumno
 }
 
 //sequelize.sync({force:true})

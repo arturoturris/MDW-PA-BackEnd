@@ -100,15 +100,13 @@ Materia.associate = function(models){
     //     foreignKey: 'materia_nrc'
     // })
 
-    
-        models.Materia.belongsTo(models.Periodo,{
-            foreignKey:{
-                name: 'id_periodo',
-                allowNull: false
-            },
-            onDelete: 'CASCADE'
-        })
-        
+    models.Materia.belongsTo(models.Periodo,{
+        foreignKey:{
+            name: 'id_periodo',
+            allowNull: false
+        },
+        onDelete: 'CASCADE'
+    })  
 }
 
 

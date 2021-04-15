@@ -66,6 +66,6 @@ Alumno.associate = function(models){
         onDelete: 'SET NULL'
     })
 }
-//sequelize.sync({force:true}) //SINCRONIZAR BASE DE DATOS
+// sequelize.sync({force:true}) //SINCRONIZAR BASE DE DATOS
 
 module.exports = Alumno

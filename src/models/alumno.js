@@ -77,6 +77,6 @@ Alumno.associate = function(models){
     })
 }
 
-// sequelize.sync({force:true}) //SINCRONIZAR BASE DE DATOS
+//  sequelize.sync({force:true}) //SINCRONIZAR BASE DE DATOS
 
 module.exports = Alumno

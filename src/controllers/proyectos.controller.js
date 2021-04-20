@@ -110,7 +110,7 @@ function getProyectosAlumno(req,res){
 async function findDetalles(req,res){
     const {id_proyecto} = req.params;
     await 
-    sequelize.query(`SELECT nombre_proyecto,fecha_inicio,fecha_fin,descripcion from proyecto WHERE id_proyecto=${id_proyecto}`)
+    sequelize.query(`SELECT id_proyecto,nombre_proyecto,fecha_inicio,fecha_fin,descripcion from proyecto WHERE id_proyecto=${id_proyecto}`)
     .then(([result,metadata]) => res.json(result))
     .catch(error => handleError(error))
 }

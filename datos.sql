@@ -18,9 +18,9 @@ INSERT INTO persona(nombre,paterno,materno,sexo) VALUES
 
 /*USUARIO*/
 INSERT INTO usuario(email,contrasena,rol,foto,id_persona) VALUES
-('arturo@arturo.com','$2b$10$et.F/RqAp/Bqvk5QqPyJXO4DtQPpSRQ2Dsvd3J1rUqrT20PdsNo5W','ALUMNO',null,1),
-('perla@perla.com','$2b$10$6J32Kk3yX6TyE5vlQ7mzGe58O88t060kAsxUoF.nEQSHzd4sM9Wxi','PROFESOR',null,2),
-('geovani@geovani.com','$2b$10$ti3AKgDa92kXlff.OYGcHeO8jUUhrYNNjYTnMgEGp7W9C85km7/sy','ALUMNO',null,3);
+('arturo@arturo.com','$2a$04$QweoB2l0T0/dDCXjWUQ79OVIZzKvFQqObHEmy90Wv.8W4oTJdUkem','ALUMNO',null,1),
+('perla@perla.com','$2a$04$QweoB2l0T0/dDCXjWUQ79OVIZzKvFQqObHEmy90Wv.8W4oTJdUkem','PROFESOR',null,2),
+('geovani@geovani.com','$2a$04$QweoB2l0T0/dDCXjWUQ79OVIZzKvFQqObHEmy90Wv.8W4oTJdUkem','ALUMNO',null,3);
 
 /*ALUMNO*/
 INSERT INTO alumno(matricula,id_carrera,id_persona) VALUES

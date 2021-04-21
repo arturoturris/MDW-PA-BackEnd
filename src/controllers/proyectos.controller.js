@@ -1,5 +1,5 @@
 const {sequelize} = require('../config/sequelize')
-const errorController = require('./error.controller')
+const {handleError} = require('./error.controller')
 const ModelValidator = require('../validator/ModelValidator')
 
 function existsAlumno(req,res,next){
@@ -11,7 +11,19 @@ function existsAlumno(req,res,next){
                 res.sendStatus(404)
         })
         .catch(err =>
-            errorController.handleError(req,res,err))   
+            handleError(req,res,err))   
+}
+
+function existsProyecto(req,res,next){
+    sequelize.models.Proyecto.findOne({where: {id_proyecto: req.params.id_proyecto}})
+        .then(proyecto => {
+            if(proyecto)
+                next()
+            else
+                res.sendStatus(404)
+        })
+        .catch(err =>
+            handleError(req,res,err))   
 }
 
 function buildProyecto(body){
@@ -44,6 +56,16 @@ function buildEquipo(body,id_proyecto){
     return modelos
 }
 
+function buildEtapa(body){
+    return sequelize.models.Etapa.build({
+        nombre: body.nombre,
+        id_proyecto: body.id_proyecto,
+        fecha_inicio: body.fecha_inicio,
+        fecha_fin: (body.fecha_fin || null),
+        estado: (body.estado || 'EN PROCESO')
+    })
+}
+
 async function createProyecto(req,res){
     let proyecto = buildProyecto(req.body)
     let equipo
@@ -62,7 +84,7 @@ async function createProyecto(req,res){
         return res.sendStatus(201)
     }
     catch(err){
-        errorController.handleError(req,res,err)
+        handleError(req,res,err)
     }
 }
 
@@ -73,14 +95,15 @@ function validateProyecto(requestType){
         let validator = new ModelValidator()
 
         try{
-            await validator.validate(proyecto,{skip: ['id_proyecto']})
+            let skip = ['id_proyecto']
 
-            if(requestType === 'post'){
+            if(requestType === 'put')
+                skip = ['id_proyecto','nrc','coordinador']
 
-            }
+            await validator.validate(proyecto,{skip})
         }
         catch(err){
-            return errorController.handleError(req,res,err)
+            return handleError(req,res,err)
         }
         
         let validationErrors = validator.getErrors()
@@ -104,15 +127,141 @@ function getProyectosAlumno(req,res){
             return []
         return await res.json(proyectos.Proyectos)
     })
-    .catch(err => errorController.handleError(req,res,err))
+    .catch(err => handleError(req,res,err))
 }
 
-async function findDetalles(req,res){
+function findDetalles(req,res){
     const {id_proyecto} = req.params;
-    await 
-    sequelize.query(`SELECT nombre_proyecto,fecha_inicio,fecha_fin,descripcion from proyecto WHERE id_proyecto=${id_proyecto}`)
-    .then(([result,metadata]) => res.json(result))
-    .catch(error => handleError(error))
+    
+    sequelize.models.Proyecto.findOne({
+        include: {
+            model: sequelize.models.Materia,
+            attributes: [],
+            include: {
+                model: sequelize.models.Profesor,
+                include: {
+                    model: sequelize.models.Persona
+                }
+            }
+        },
+        attributes: [
+            'id_proyecto',
+            'nombre_proyecto',
+            'fecha_inicio',
+            'fecha_limite',
+            'fecha_fin',
+            'descripcion',
+            'coordinador',
+            [sequelize.col('Materium.nombre'),'materia'],
+            [sequelize.col('Materium.Profesor.Persona.nombre'),'profesor_nombre'],
+            [sequelize.col('Materium.Profesor.Persona.paterno'),'profesor_paterno'],
+            [sequelize.col('Materium.Profesor.Persona.materno'),'profesor_materno']
+        ],
+        where: {id_proyecto}
+    })
+    .then(proyecto => {
+        if(!proyecto)
+            return res.sendStatus(404)
+
+        proyecto.dataValues.profesor =  `${proyecto.dataValues.profesor_nombre} ${proyecto.dataValues.profesor_paterno} ${proyecto.dataValues.profesor_materno}`
+        delete proyecto.dataValues['profesor_nombre']
+        delete proyecto.dataValues['profesor_paterno']
+        delete proyecto.dataValues['profesor_materno']
+
+        return res.json(proyecto)
+    })
+    .catch(err => {
+        handleError(req,res,err)
+    })
+}
+
+async function updateProyecto(req,res){
+    try{
+        let proyecto = await sequelize.models.Proyecto.findOne({where: {id_proyecto: req.params.id_proyecto}})
+
+        await sequelize.transaction(async t => {
+            //UPDATING PROYECTO
+            await proyecto.update({
+                nombre_proyecto: req.body.nombre_proyecto,
+                fecha_inicio: req.body.fecha_inicio,
+                fecha_limite: (req.body.fecha_limite || null),
+                fecha_fin: (req.body.fecha_fin || null),
+                descripcion: req.body.descripcion
+            },{
+                transaction: t,
+                validate: false
+            })
+        })
+
+        res.sendStatus(200)
+    }
+    catch(err){
+        handleError(req,res,err)
+    }
+}
+
+async function deleteProyecto(req,res){
+    try{
+        const proyecto = await sequelize.models.Proyecto.findOne({where: {id_proyecto: req.params.id_proyecto}})
+
+        await sequelize.transaction(async t => {
+            await proyecto.destroy({transaction: t})
+        })
+
+        res.sendStatus(200)
+    }
+    catch(err){
+        handleError(req,res,err)
+    }
+}
+
+function validateEtapa(requestType){
+    return async (req,res,next) => {
+        let etapa = buildEtapa(req.body)
+
+        let validator = new ModelValidator()
+
+        try{
+            let skip = ['id_etapa']
+
+            if(requestType === 'put')
+                skip = ['id_etapa']
+
+            await validator.validate(etapa,{skip})
+        } catch(err){
+            return handleError(req,res,err)
+        }
+        
+        let validationErrors = validator.getErrors()
+
+        if(validationErrors)
+            return res.status(422).json({errors: validationErrors})
+
+        next()
+    }
+}
+
+function createEtapa(req,res){
+    const etapa = buildEtapa(req.body)
+    
+    try{
+        etapa.save({validate: false})
+        return res.sendStatus(201)
+    } catch(err){
+        handleError(req,res,err)
+    }
+}
+
+function getEtapasProyecto(req,res){
+    const {id_proyecto} = req.params
+
+    sequelize.models.Etapa.findAll({
+        where: {id_proyecto}
+    })
+    .then(async etapas => {
+        return res.json(etapas)
+    })
+    .catch(err => handleError(req,res,err))
 }
 
 module.exports = {
@@ -120,5 +269,11 @@ module.exports = {
     createProyecto,
     getProyectosAlumno,
     existsAlumno,
-    findDetalles
+    findDetalles,
+    updateProyecto,
+    existsProyecto,
+    deleteProyecto,
+    validateEtapa,
+    createEtapa,
+    getEtapasProyecto
 }

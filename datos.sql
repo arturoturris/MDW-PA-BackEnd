@@ -1,7 +1,7 @@
 /*
 ALUMNO - arturo@arturo.com arturo123
 PROFESOR - perla@perla.com perla123
-ALUMNO - geovani@geovani.com geovani.com
+ALUMNO - geovani@geovani.com geovani123
 */
 
 /*CARRERAS*/
@@ -60,3 +60,10 @@ INSERT INTO equipo(id_proyecto,matricula) VALUES
 (1,201749577),
 (2,201749575),
 (2,201749577);
+
+/*ETAPAS*/
+INSERT INTO etapa(nombre,id_proyecto,fecha_inicio,fecha_fin,estado) VALUES
+('PLANEACIÓN',1,'2021-04-01','2021-04-12','FINALIZADA'),
+('ANALISIS',1,'2021-04-12',null,'EN PROCESO'),
+('SEMANA 1',2,'2021-03-15','2021-03-22','FINALIZADA'),
+('SEMANA 2',2,'2021-03-22',null,'EN PROCESO');

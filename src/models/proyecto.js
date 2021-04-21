@@ -23,7 +23,7 @@ const Proyecto = sequelize.define('Proyecto',{
         }
     },
     fecha_inicio:{
-        type: DataTypes.DATE,
+        type: DataTypes.DATEONLY,
         allowNull: false,
         defaultValue:  DataTypes.DATE.NOW,
         validate: {
@@ -38,7 +38,7 @@ const Proyecto = sequelize.define('Proyecto',{
         }
     },
     fecha_limite:{
-        type: DataTypes.DATE,
+        type: DataTypes.DATEONLY,
         allowNull: true,
         validate: {
             isDate: {
@@ -48,7 +48,7 @@ const Proyecto = sequelize.define('Proyecto',{
         }
     },
     fecha_fin:{
-        type: DataTypes.DATE,
+        type: DataTypes.DATEONLY,
         allowNull: true,
         validate: {
             isDate: {

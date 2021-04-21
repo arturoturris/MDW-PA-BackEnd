@@ -1,5 +1,5 @@
 const {sequelize} = require('../config/sequelize')
-const errorController = require('./error.controller')
+const {handleError} = require('./error.controller')
 
 async function getAsignacines(req,res){
     console.log(req.params)

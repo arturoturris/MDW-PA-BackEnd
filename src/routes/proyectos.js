@@ -2,24 +2,21 @@ const {Router} = require('express')
 const router = Router()
 const proyectosController = require('../controllers/proyectos.controller')
 
-router.post('/',
-    proyectosController.validateProyecto('post'),
-    proyectosController.createProyecto)
-router.put('/:id_proyecto',
+router.route('/')
+    .post(
+        proyectosController.validateProyecto('post'),
+        proyectosController.createProyecto)
+router.route('/:id_proyecto')
+    .all(proyectosController.existsProyecto)
+    .get(proyectosController.findDetalles)
+    .put(
+        proyectosController.validateProyecto('put'),
+        proyectosController.updateProyecto)
+    .delete(
+        proyectosController.existsProyecto,
+        proyectosController.deleteProyecto)
+router.use('/:id_proyecto/etapas',
     proyectosController.existsProyecto,
-    proyectosController.validateProyecto('put'),
-    proyectosController.updateProyecto)
-router.get('/:id_proyecto',
-    proyectosController.findDetalles)
-router.delete('/:id_proyecto',
-    proyectosController.existsProyecto,
-    proyectosController.deleteProyecto)
-router.get('/:id_proyecto/etapas',
-    proyectosController.existsProyecto,
-    proyectosController.getEtapasProyecto)
-router.post('/:id_proyecto/etapas',
-    proyectosController.existsProyecto,
-    proyectosController.validateEtapa('post'),
-    proyectosController.createEtapa)
+    require('./etapas'))
 
 module.exports = router

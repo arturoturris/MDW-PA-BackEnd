@@ -25,7 +25,7 @@ function subirArchivo(req,res){
       .catch(error => handleError(req,res,error))
       
   }
-  
+
   module.exports={
     subirArchivo
   }

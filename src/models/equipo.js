@@ -31,6 +31,20 @@ const Equipo = sequelize.define('Equipo',{
                     throw new Error('No un alumno con la matricula proporcionada.')
             }
         }
+    },
+    estado: {
+        type: DataTypes.STRING(45),
+        allowNull: false,
+        validate: {
+            notNull: {
+                args: true,
+                msg: 'El estado del alumno debe ser proporcionado.'
+            },
+            isIn: {
+                args: [['ACEPTADO','PENDIENTE','RECHAZADO']],
+                msg: 'El esado proporcionado no es válido.'
+            }
+        }
     }
 },{
     timestamps: false,

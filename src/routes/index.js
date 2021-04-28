@@ -13,6 +13,7 @@ router.use('/materias',cors(),require('./materias'))
 router.use('/proyectos',cors(),require('./proyectos'))
 router.use('/archivos',cors(),require('./archivos'))
 router.use('/asignacion',cors(),require('./asignacion'))
+router.use('/etapas',cors(),require('./etapas'))
 router.use('/',cors(),require('./login'))
 
 module.exports = router

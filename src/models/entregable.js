@@ -10,7 +10,7 @@ const Entregable = sequelize.define('Entregable',{
         autoIncrement:true,
         validate: {
             notNull:{
-                msg: 'El id de la carrera debe ser proporcionado.'
+                msg: 'El id del entregable debe ser proporcionado.'
             }
         }
     },
@@ -38,15 +38,15 @@ const Entregable = sequelize.define('Entregable',{
         validate: {
             notNull:{
                 args: true,
-                msg: 'El nombre debe ser proporcionado.'
+                msg: 'La descripción debe ser proporcionado.'
             },
             is: {
                 args: /[a-záéíóú ]+/i,
-                msg: 'El nombre solo puede contener carácteres alfabeticos.'
+                msg: 'La descripcion  solo puede contener carácteres alfabeticos.'
             },
             len:{
                 args: [5-50],
-                msg: 'El nombre es demasiado corto o largo.'
+                msg: 'La descripción es demasiado corto o largo.'
             }
         }
     },
@@ -73,12 +73,18 @@ const Entregable = sequelize.define('Entregable',{
 })
 
 Entregable.associate = function(models){
-    models.Entregable.belongsTo(models.Proyecto,{
-        foreignKey: {
-            name: 'id_proyecto',
-            allowNull: false
-        },
-        onDelete: 'CASCADE'
+    // models.Entregable.belongsTo(models.Proyecto,{
+    //     foreignKey: {
+    //         name: 'id_proyecto',
+    //         allowNull: false
+    //     },
+    //     onDelete: 'CASCADE'
+    // })
+
+    models.Entregable.belongsTo(models.Etapa,{
+        foreignKey:{
+            name: 'id_etapa'
+        }
     })
 }
 

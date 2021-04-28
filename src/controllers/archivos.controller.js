@@ -8,9 +8,9 @@ function subirArchivo(req,res){
           await
           sequelize.query(`
           INSERT INTO entregable
-          (nombre,descripcion,url,fecha_asignacion,id_proyecto)
+          (nombre,descripcion,url,fecha_asignacion,id_etapa)
           VALUES
-          ("${req.body.nombre}","${req.body.instrucciones}","src/archivos/${req.body.nombre}","${req.body.fecha}",${req.params.id_proyecto})`)
+          ("${req.body.nombre}","${req.body.instrucciones}","src/archivos/${req.body.nombre}","${req.body.fecha}",${req.body.idEtapa})`)
           .then(res.status(201).send({ message : 'Entregable creado' }))
           .catch(error => handleError(req,res,error))
       })
@@ -18,9 +18,9 @@ function subirArchivo(req,res){
       
       sequelize.query(`
       INSERT INTO entregable
-      (nombre,descripcion,url,fecha_asignacion,id_proyecto)
+      (nombre,descripcion,url,fecha_asignacion,id_etapa)
       VALUES
-      ("${req.body.nombre}","${req.body.instrucciones}","","${req.body.fecha}",${req.params.id_proyecto})`)
+      ("${req.body.nombre}","${req.body.instrucciones}","","${req.body.fecha}",${req.body.idEtapa})`)
       .then(res.status(201).send({ message : 'Entregable creado' }))
       .catch(error => handleError(req,res,error))
       

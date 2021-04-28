@@ -67,3 +67,7 @@ INSERT INTO etapa(nombre,id_proyecto,fecha_inicio,fecha_fin,estado) VALUES
 ('ANALISIS',1,'2021-04-12',null,'EN PROCESO'),
 ('SEMANA 1',2,'2021-03-15','2021-03-22','FINALIZADA'),
 ('SEMANA 2',2,'2021-03-22',null,'EN PROCESO');
+
+/* ENTREGABLE */
+INSERT INTO entregable(nombre,descripcion,url,fecha_asignacion,id_etapa) VALUES
+('TAREA1','DESCRIPCION GENERAL DEL PROYECTO',"","2021-04-13", 1)

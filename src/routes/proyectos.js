@@ -12,11 +12,12 @@ router.route('/:id_proyecto')
     .put(
         proyectosController.validateProyecto('put'),
         proyectosController.updateProyecto)
-    .delete(
-        proyectosController.existsProyecto,
-        proyectosController.deleteProyecto)
+    .delete(proyectosController.deleteProyecto)
 router.use('/:id_proyecto/etapas',
     proyectosController.existsProyecto,
     require('./etapas'))
+router.use('/:id_proyecto/equipo',
+    proyectosController.existsProyecto,
+    require('./equipo'))
 
 module.exports = router

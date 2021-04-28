@@ -85,32 +85,15 @@ const Proyecto = sequelize.define('Proyecto',{
                     throw new Error('No es un nrc válido.')
             }
         }
-    },
-    coordinador: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: sequelize.models.Alumno,
-            key: 'matricula'
-        },
-        validate: {
-            notNull: {
-                args: true,
-                msg: 'La matricula del coordinador debe ser proporcionada.'
-            },
-            async isValid(value) {
-                let alumno = await sequelize.models.Alumno.findOne({where: {matricula: value}})
-                if(!alumno)
-                    throw new Error('No existe un alumno con la matricula proporcionada.')
-            }
-        }
     }
 },{
     tableName: 'proyecto',
     timestamps: false,
-    beforeSave: (proyecto,options) => {
-        proyecto.set('nombre_proyecto',proyecto.get('nombre_proyecto').toUpperCase())
-        proyecto.set('descripcion',proyecto.get('descripcion').toUpperCase())
+    hooks: {
+        beforeSave: (proyecto,options) => {
+            proyecto.set('nombre_proyecto',proyecto.get('nombre_proyecto').toUpperCase())
+            proyecto.set('descripcion',proyecto.get('descripcion').toUpperCase())
+        }
     }
 })
 
@@ -118,14 +101,6 @@ Proyecto.associate = function(models){
     models.Proyecto.belongsTo(models.Materia,{
         foreignKey: {
             name: 'nrc',
-            allowNull: false
-        },
-        onDelete: 'CASCADE'
-    })
-
-    models.Proyecto.belongsTo(models.Alumno,{
-        foreignKey: {
-            name: 'coordinador',
             allowNull: false
         },
         onDelete: 'CASCADE'

@@ -50,16 +50,16 @@ INSERT INTO carga_academica(alumno_matricula,materia_nrc) VALUES
 (201749577,30739);
 
 /*PROYECTO*/
-INSERT INTO proyecto(nombre_proyecto,fecha_inicio,fecha_limite,fecha_fin,descripcion,nrc,coordinador) VALUES
-('PROYECTO APLICACIÓN WEB','2021-04-14','2021-05-14',null,'APLICACIÓN WEB RESPONSIVA PARA PROYECTOS ACADÉMICOS.',31536,201749575),
-('PROYECTO ALGORITMO GENÉTICO','2021-04-16','2021-05-16',null,'ALGORITMO GENÉTICO IMPLEMENTADO EN MATLAB.',30739,201749577);
+INSERT INTO proyecto(nombre_proyecto,fecha_inicio,fecha_limite,fecha_fin,descripcion,nrc) VALUES
+('PROYECTO APLICACIÓN WEB','2021-04-14','2021-05-14',null,'APLICACIÓN WEB RESPONSIVA PARA PROYECTOS ACADÉMICOS.',31536),
+('PROYECTO ALGORITMO GENÉTICO','2021-04-16','2021-05-16',null,'ALGORITMO GENÉTICO IMPLEMENTADO EN MATLAB.',30739);
 
 /*EQUIPO*/
-INSERT INTO equipo(id_proyecto,matricula,estado) VALUES
-(1,201749575,'PENDIENTE'),
-(1,201749577,'PENDIENTE'),
-(2,201749575,'PENDIENTE'),
-(2,201749577,'PENDIENTE');
+INSERT INTO equipo(id_proyecto,matricula,estado,rol) VALUES
+(1,201749575,'PENDIENTE','LIDER'),
+(1,201749577,'PENDIENTE','INTEGRANTE'),
+(2,201749575,'PENDIENTE','INTEGRANTE'),
+(2,201749577,'PENDIENTE','LIDER');
 
 /*ETAPAS*/
 INSERT INTO etapa(nombre,id_proyecto,fecha_inicio,fecha_fin,estado) VALUES
@@ -70,7 +70,7 @@ INSERT INTO etapa(nombre,id_proyecto,fecha_inicio,fecha_fin,estado) VALUES
 
 /*ENTREGABLE*/
 INSERT INTO entregable(id_etapa,nombre,descripcion,url_rubrica,url_entregable,calificacion,observaciones,fecha_asignacion,fecha_limite,fecha_entrega,entregado,devuelto) VALUES
-(1,'HISTORIAS DE USUARIO','ENTREGAR UN DOCUMENTO CON LAS HISTORIAS DE USUARIO','rubrica.txt','entregable.txt',9.2,'NO ANEXARON EL ARCHIVO COMO PDF','2021-04-23','2021-04-30','2021-04-29',1,1),
+(1,'HISTORIAS DE USUARIO','ENTREGAR UN DOCUMENTO CON LAS HISTORIAS DE USUARIO','1_rubrica.txt','1_entregable.txt',9.2,'NO ANEXARON EL ARCHIVO COMO PDF','2021-04-23','2021-04-30','2021-04-29',1,1),
 (2,'MOCKUPS DE INTERFACES','ENTREGAR UN DOCUMENTO CON LOS MOCKUPS',null,null,null,null,'2021-05-01','2021-05-07',null,0,0),
 (3,'PRIMERA PARTE ALGORITMO','EMPEZAR CON EL ALGORITMO',null,null,null,null,'2021-04-23','2021-04-30',null,0,0),
 (4,'SEGUNDA PARTE ALGORITMO','TERMINAR EL ALGORITMO',null,null,null,null,'2021-05-01','2021-05-07',null,0,0);

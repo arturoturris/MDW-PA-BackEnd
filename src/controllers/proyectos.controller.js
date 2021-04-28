@@ -50,7 +50,8 @@ function buildEquipo(body,id_proyecto){
         modelos.push(sequelize.models.Equipo.build({
             id_proyecto,
             matricula,
-            estado: 'PENDIENTE'
+            estado: 'PENDIENTE',
+            rol: coordinador === matricula ? 'LIDER' : 'INTEGRANTE'
         }))
     }
 
@@ -142,8 +143,8 @@ function findDetalles(req,res){
             'fecha_limite',
             'fecha_fin',
             'descripcion',
-            'coordinador',
             [sequelize.col('Materium.nombre'),'materia'],
+            [sequelize.col('Materium.nrc'),'nrc'],
             [sequelize.col('Materium.Profesor.Persona.nombre'),'profesor_nombre'],
             [sequelize.col('Materium.Profesor.Persona.paterno'),'profesor_paterno'],
             [sequelize.col('Materium.Profesor.Persona.materno'),'profesor_materno']

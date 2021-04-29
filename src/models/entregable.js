@@ -109,6 +109,7 @@ const Entregable = sequelize.define('Entregable',{
     entregado: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
+        defaultValue: 0,
         validate: {
             notNull: {
                 msg: 'Tiene que indicar si la tarea ha sido entregada.'
@@ -118,6 +119,7 @@ const Entregable = sequelize.define('Entregable',{
     devuelto: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
+        defaultValue: 0,
         validate: {
             notNull: {
                 msg: 'Tiene que indicar si la tarea ha sido devuelta.'
@@ -127,10 +129,13 @@ const Entregable = sequelize.define('Entregable',{
 },{
     tableName: 'entregable',
     timestamps: false,
-    beforeSave: (entregable,options) => {
-        entregable.set('nombre',entregable.get('nombre').toUpperCase())
-        entregable.set('descripcion',entregable.get('descripcion').toUpperCase())
-        entregable.set('observaciones',entregable.get('observaciones').toUpperCase())
+    hooks:{
+        beforeSave: (entregable,options) => {
+            entregable.set('nombre',entregable.get('nombre').toUpperCase())
+            entregable.set('descripcion',entregable.get('descripcion').toUpperCase())
+            if(entregable.get('observaciones'))
+                entregable.set('observaciones',entregable.get('observaciones').toUpperCase())
+        }
     }
 })
 

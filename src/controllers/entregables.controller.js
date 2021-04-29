@@ -107,7 +107,7 @@ exports.subirEntregable = async (req,res) => {
     }
 }
 
-function getExtension(filename){
+exports.getExtension = (filename) => {
     const name = filename.split('.')
 
     return name.length < 1 ?

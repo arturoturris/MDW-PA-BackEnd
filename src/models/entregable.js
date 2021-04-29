@@ -50,17 +50,77 @@ const Entregable = sequelize.define('Entregable',{
             }
         }
     },
-    url: {
-        type: DataTypes.STRING(50),
+    url_rubrica: {
+        type: DataTypes.STRING(355),
         allowNull: true,
     },
+    url_entregable: {
+        type: DataTypes.STRING(355),
+        allowNull: true,
+    },
+    calificacion: {
+        type: DataTypes.FLOAT,
+        allowNull: true,
+        validate: {
+            isFloat: {
+                msg: 'La calificación no tiene un formato válido.'
+            }
+        }
+    },
+    observaciones: {
+        type: DataTypes.STRING(200),
+        allowNull: true
+    },
     fecha_asignacion: {
-        type: DataTypes.DATE(),
+        type: DataTypes.DATEONLY,
         allowNull: false,
         validate: {
             notNull:{
                 args: true,
-                msg: 'La fecha debe ser proporcionada.'
+                msg: 'La fecha de asignación debe ser proporcionada.'
+            },
+            isDate:{
+                msg: 'La fecha de asignación no tiene un formato válido.'
+            }
+        }
+    },
+    fecha_limite: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        validate: {
+            notNull:{
+                args: true,
+                msg: 'La fecha límite debe ser proporcionada.'
+            },
+            isDate:{
+                msg: 'La fecha límite no tiene un formato válido.'
+            }
+        }
+    },
+    fecha_entrega: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        validate: {
+            isDate:{
+                msg: 'La fecha de entrega no tiene un formato válido.'
+            }
+        }
+    },
+    entregado: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        validate: {
+            notNull: {
+                msg: 'Tiene que indicar si la tarea ha sido entregada.'
+            }
+        }
+    },
+    devuelto: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        validate: {
+            notNull: {
+                msg: 'Tiene que indicar si la tarea ha sido devuelta.'
             }
         }
     }
@@ -69,22 +129,18 @@ const Entregable = sequelize.define('Entregable',{
     timestamps: false,
     beforeSave: (entregable,options) => {
         entregable.set('nombre',entregable.get('nombre').toUpperCase())
+        entregable.set('descripcion',entregable.get('descripcion').toUpperCase())
+        entregable.set('observaciones',entregable.get('observaciones').toUpperCase())
     }
 })
 
 Entregable.associate = function(models){
-    // models.Entregable.belongsTo(models.Proyecto,{
-    //     foreignKey: {
-    //         name: 'id_proyecto',
-    //         allowNull: false
-    //     },
-    //     onDelete: 'CASCADE'
-    // })
-
     models.Entregable.belongsTo(models.Etapa,{
-        foreignKey:{
-            name: 'id_etapa'
-        }
+        foreignKey: {
+            name: 'id_etapa',
+            allowNull: false
+        },
+        onDelete: 'CASCADE'
     })
 }
 

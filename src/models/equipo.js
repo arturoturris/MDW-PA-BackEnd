@@ -31,10 +31,55 @@ const Equipo = sequelize.define('Equipo',{
                     throw new Error('No un alumno con la matricula proporcionada.')
             }
         }
+    },
+    estado: {
+        type: DataTypes.STRING(45),
+        allowNull: false,
+        validate: {
+            notNull: {
+                args: true,
+                msg: 'El estado del alumno debe ser proporcionado.'
+            },
+            isIn: {
+                args: [['ACEPTADO','PENDIENTE','RECHAZADO']],
+                msg: 'El estado proporcionado no es válido.'
+            }
+        }
+    },
+    rol: {
+        type: DataTypes.STRING(10),
+        allowNull: false,
+        validate: {
+            notNull: {
+                msg: 'El rol del integrante debe ser proporcionado.'
+            },
+            isIn: {
+                args: [['LIDER','INTEGRANTE']],
+                msg: 'El rol proporcionado no es válido.'
+            }
+        }
     }
 },{
     timestamps: false,
     tableName: 'equipo'
 })
+
+Equipo.associate = function(models){
+    models.Equipo.belongsTo(models.Proyecto,{
+        foreignKey: {
+            name: 'id_proyecto',
+            allowNull: false
+        },
+        onDelete: 'CASCADE'
+    })
+
+    models.Equipo.belongsTo(models.Alumno,{
+        foreignKey: {
+            name: 'matricula',
+            allowNull: false
+        },
+        onDelete: 'CASCADE'
+    })
+}
 
 module.exports = Equipo

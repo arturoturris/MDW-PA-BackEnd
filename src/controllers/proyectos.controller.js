@@ -49,21 +49,13 @@ function buildEquipo(body,id_proyecto){
     for(let matricula of equipo){
         modelos.push(sequelize.models.Equipo.build({
             id_proyecto,
-            matricula
+            matricula,
+            estado: 'PENDIENTE',
+            rol: coordinador === matricula ? 'LIDER' : 'INTEGRANTE'
         }))
     }
 
     return modelos
-}
-
-function buildEtapa(body){
-    return sequelize.models.Etapa.build({
-        nombre: body.nombre,
-        id_proyecto: body.id_proyecto,
-        fecha_inicio: body.fecha_inicio,
-        fecha_fin: (body.fecha_fin || null),
-        estado: (body.estado || 'EN PROCESO')
-    })
 }
 
 async function createProyecto(req,res){
@@ -151,8 +143,8 @@ function findDetalles(req,res){
             'fecha_limite',
             'fecha_fin',
             'descripcion',
-            'coordinador',
             [sequelize.col('Materium.nombre'),'materia'],
+            [sequelize.col('Materium.nrc'),'nrc'],
             [sequelize.col('Materium.Profesor.Persona.nombre'),'profesor_nombre'],
             [sequelize.col('Materium.Profesor.Persona.paterno'),'profesor_paterno'],
             [sequelize.col('Materium.Profesor.Persona.materno'),'profesor_materno']
@@ -215,55 +207,6 @@ async function deleteProyecto(req,res){
     }
 }
 
-function validateEtapa(requestType){
-    return async (req,res,next) => {
-        let etapa = buildEtapa(req.body)
-
-        let validator = new ModelValidator()
-
-        try{
-            let skip = ['id_etapa']
-
-            if(requestType === 'put')
-                skip = ['id_etapa']
-
-            await validator.validate(etapa,{skip})
-        } catch(err){
-            return handleError(req,res,err)
-        }
-        
-        let validationErrors = validator.getErrors()
-
-        if(validationErrors)
-            return res.status(422).json({errors: validationErrors})
-
-        next()
-    }
-}
-
-function createEtapa(req,res){
-    const etapa = buildEtapa(req.body)
-    
-    try{
-        etapa.save({validate: false})
-        return res.sendStatus(201)
-    } catch(err){
-        handleError(req,res,err)
-    }
-}
-
-function getEtapasProyecto(req,res){
-    const {id_proyecto} = req.params
-
-    sequelize.models.Etapa.findAll({
-        where: {id_proyecto}
-    })
-    .then(async etapas => {
-        return res.json(etapas)
-    })
-    .catch(err => handleError(req,res,err))
-}
-
 module.exports = {
     validateProyecto,
     createProyecto,
@@ -272,8 +215,5 @@ module.exports = {
     findDetalles,
     updateProyecto,
     existsProyecto,
-    deleteProyecto,
-    validateEtapa,
-    createEtapa,
-    getEtapasProyecto
+    deleteProyecto
 }

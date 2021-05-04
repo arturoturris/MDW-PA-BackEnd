@@ -14,6 +14,7 @@ router.use('/proyectos',cors(),require('./proyectos'))
 router.use('/archivos',cors(),require('./archivos'))
 router.use('/asignacion',cors(),require('./asignacion'))
 router.use('/entregables',cors(),require('./entregables'))
+router.use('/usuarios',cors(),require('./usuarios'))
 router.use('/',cors(),require('./login'))
 
 module.exports = router

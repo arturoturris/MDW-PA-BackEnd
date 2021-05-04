@@ -50,7 +50,7 @@ function buildEquipo(body,id_proyecto){
         modelos.push(sequelize.models.Equipo.build({
             id_proyecto,
             matricula,
-            estado: 'PENDIENTE',
+            estado: coordinador === matricula ? 'ACEPTADO' : 'PENDIENTE',
             rol: coordinador === matricula ? 'LIDER' : 'INTEGRANTE'
         }))
     }
@@ -207,6 +207,37 @@ async function deleteProyecto(req,res){
     }
 }
 
+async function getEntregables(req,res){
+    const {id_proyecto} = req.params
+    
+    try{
+        const entregables = await sequelize.models.Entregable.findAll({
+            attributes: [
+                'id_entregable',
+                [sequelize.col('Etapa.nombre'),'etapa'],
+                [sequelize.col('Etapa.id_etapa'),'id_etapa'],
+                'nombre',
+                'entregado',
+                'fecha_limite',
+                'calificacion'
+            ],
+            include: {
+                model: sequelize.models.Etapa,
+                attributes: [],
+                includes: {
+                    model: sequelize.models.Proyecto,
+                    attributes: []
+                },
+                where: {id_proyecto}
+            }
+        })
+
+        res.json(entregables)
+    } catch(err){
+        handleError(req,res,err)
+    }
+}
+
 module.exports = {
     validateProyecto,
     createProyecto,
@@ -215,5 +246,6 @@ module.exports = {
     findDetalles,
     updateProyecto,
     existsProyecto,
-    deleteProyecto
+    deleteProyecto,
+    getEntregables
 }

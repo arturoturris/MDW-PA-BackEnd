@@ -56,10 +56,10 @@ INSERT INTO proyecto(nombre_proyecto,fecha_inicio,fecha_limite,fecha_fin,descrip
 
 /*EQUIPO*/
 INSERT INTO equipo(id_proyecto,matricula,estado,rol) VALUES
-(1,201749575,'PENDIENTE','LIDER'),
+(1,201749575,'ACEPTADO','LIDER'),
 (1,201749577,'PENDIENTE','INTEGRANTE'),
 (2,201749575,'PENDIENTE','INTEGRANTE'),
-(2,201749577,'PENDIENTE','LIDER');
+(2,201749577,'ACEPTADO','LIDER');
 
 /*ETAPAS*/
 INSERT INTO etapa(nombre,id_proyecto,fecha_inicio,fecha_fin,estado) VALUES
@@ -74,3 +74,8 @@ INSERT INTO entregable(id_etapa,nombre,descripcion,url_rubrica,url_entregable,ca
 (2,'MOCKUPS DE INTERFACES','ENTREGAR UN DOCUMENTO CON LOS MOCKUPS',null,null,null,null,'2021-05-01','2021-05-07',null,0,0),
 (3,'PRIMERA PARTE ALGORITMO','EMPEZAR CON EL ALGORITMO',null,null,null,null,'2021-04-23','2021-04-30',null,0,0),
 (4,'SEGUNDA PARTE ALGORITMO','TERMINAR EL ALGORITMO',null,null,null,null,'2021-05-01','2021-05-07',null,0,0);
+
+/*NOTIFICACIONES*/
+INSERT INTO notificacion(id_usuario,descripcion,fecha_notificacion,leida,url) VALUES
+(1,'PERLA HERNANDEZ ha asignado un nuevo entregable.',NOW(),0,'/alumno/misProyectos/2/etapas/4/entregables/3'),
+(1,'PERLA HERNANDEZ ha asignado un nuevo entregable.',NOW(),1,'/alumno/misProyectos/2/etapas/4/entregables/4');

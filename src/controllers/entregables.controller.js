@@ -2,7 +2,7 @@ const {sequelize} = require('../config/sequelize')
 const {handleError} = require('./error.controller')
 const ModelValidator = require('../validator/ModelValidator')
 
-exports.getEntregablesProyecto = (req,res) => {
+getEntregablesProyecto = (req,res) => {
     const {id_proyecto,id_etapa} = req.params
     
     sequelize.models.Entregable.findAll({
@@ -21,7 +21,7 @@ exports.getEntregablesProyecto = (req,res) => {
     .catch(err => handleError(req,res,err))
 }
 
-exports.getEntregable = (req,res) => {
+getEntregable = (req,res) => {
     const {id_entregable} = req.params
 
     sequelize.models.Entregable.findOne({
@@ -39,7 +39,7 @@ exports.getEntregable = (req,res) => {
     .catch(err => handleError(req,res,err))
 }
 
-exports.existsEntregable = (req,res,next) => {
+existsEntregable = (req,res,next) => {
     const {id_entregable} = req.params
 
     sequelize.models.Entregable.findOne({
@@ -55,7 +55,7 @@ exports.existsEntregable = (req,res,next) => {
     .catch(err => handleError(req,res,err))
 }
 
-exports.descargarRubrica = (req,res) => {
+descargarRubrica = (req,res) => {
     const {id_entregable} = req.params
     const path_entregables = 'src/archivos'
 
@@ -73,7 +73,7 @@ exports.descargarRubrica = (req,res) => {
     .catch(err => handleError(req,res,err))
 }
 
-exports.descargarEntregable = (req,res) => {
+descargarEntregable = (req,res) => {
     const {id_entregable} = req.params
     const path_entregables = 'src/archivos'
 
@@ -91,7 +91,27 @@ exports.descargarEntregable = (req,res) => {
     .catch(err => handleError(req,res,err))
 }
 
-exports.subirEntregable = async (req,res) => {
+verEntregable = (req,res) => {
+    const {id_entregable} = req.params
+    const path_entregables = 'src/archivos'
+
+    sequelize.models.Entregable.findOne({
+        attributes: ['id_entregable','url_entregable'],
+        where: {id_entregable}
+    })
+    .then(entregable =>{
+        const archivo = entregable.url_entregable
+        if(archivo){
+            lSlash = __dirname.lastIndexOf('\\')
+            absolutePath = __dirname.slice(0,lSlash)
+            res.sendFile(`${absolutePath}\\archivos\\${archivo}`) 
+        }
+        else res.sendStatus(404)
+    })
+    .catch(err => handleError(req,res,err))
+}
+
+subirEntregable = async (req,res) => {
     const {id_entregable} = req.params
     const {entregable} = req.files
     const extension = getExtension(entregable.name)
@@ -101,19 +121,44 @@ exports.subirEntregable = async (req,res) => {
     try{
         await entregable.mv(path)
         await actualizarEntregable(id_entregable,filename)
-        res.sendStatus(200)
+        res.status(201)
     }catch(err){
         handleError(req,res,err)
     }
 }
 
-exports.getExtension = (filename) => {
+calificar = async (req,res) => {
+    try{
+        const {id_entregable} = req.params
+        const {observaciones,calificacion} = req.body
+        await calificarEntregable(id_entregable,observaciones,calificacion)
+        res.status(201).send({ message : 'Entregable creado' })
+    }catch(err){
+        handleError(req,res,err)
+    }
+    
+}
+
+getExtension = (filename) => {
     const name = filename.split('.')
 
     return name.length < 1 ?
         '' :
         `.${name[name.length-1]}`
 } 
+
+async function calificarEntregable(id_entregable,observaciones,calificacion){
+    try{
+        const entregable = await sequelize.models.Entregable.findByPk(id_entregable)
+        await entregable.update({
+            devuelto: true,
+            calificacion,
+            observaciones
+        })
+    } catch(err){
+        throw(err)
+    }
+}
 
 async function actualizarEntregable(id_entregable,nombre_entregable){
     try{
@@ -126,4 +171,16 @@ async function actualizarEntregable(id_entregable,nombre_entregable){
     } catch(err){
         throw err
     }
+}
+
+module.exports={
+    getExtension,
+    calificar,
+    subirEntregable,
+    descargarEntregable,
+    descargarRubrica,
+    existsEntregable,
+    getEntregable,
+    getEntregablesProyecto,
+    verEntregable
 }

@@ -1,6 +1,7 @@
 const router = require('express').Router()
 const cors = require('cors')
 const {getObjectFromToken} = require('../controllers/login.controller')
+const { route } = require('./cierre')
 
 //ROUTES
 router.use('/test',cors(),(req,res) => {
@@ -14,6 +15,7 @@ router.use('/proyectos',cors(),require('./proyectos'))
 router.use('/archivos',cors(),require('./archivos'))
 router.use('/asignacion',cors(),require('./asignacion'))
 router.use('/entregables',cors(),require('./entregables'))
+router.use('/cierre',cors(),require('./cierre'))
 router.use('/',cors(),require('./login'))
 
 module.exports = router

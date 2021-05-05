@@ -32,10 +32,11 @@ async function findUser(email){
 async function authenticateUser(req,res){
     try{
         let usuario = await findUser(req.body.email)
-        let matricula = await getMatricula(usuario.id_persona,usuario.rol)
-
+        
         if(!usuario)
             return res.sendStatus(401)
+        
+        let matricula = await getMatricula(usuario.id_persona,usuario.rol)
         
         const authenticated =
             await sequelize.models.Usuario.prototype.comparePassword(

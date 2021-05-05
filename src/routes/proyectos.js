@@ -13,6 +13,9 @@ router.route('/:id_proyecto')
         proyectosController.validateProyecto('put'),
         proyectosController.updateProyecto)
     .delete(proyectosController.deleteProyecto)
+router.route('/:id_proyecto/entregables')
+    .all(proyectosController.existsProyecto)
+    .get(proyectosController.getEntregables)
 router.use('/:id_proyecto/etapas',
     proyectosController.existsProyecto,
     require('./etapas'))

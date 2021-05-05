@@ -13,7 +13,7 @@ exports.getIntegrantes = (req,res) => {
             'rol',
             [sequelize.col('Alumno.Persona.nombre'),'nombre'],
             [sequelize.col('Alumno.Persona.paterno'),'paterno'],
-            [sequelize.col('Alumno.Persona.nombre'),'materno'],
+            [sequelize.col('Alumno.Persona.materno'),'materno'],
         ],
         include:{
             model: sequelize.models.Alumno,

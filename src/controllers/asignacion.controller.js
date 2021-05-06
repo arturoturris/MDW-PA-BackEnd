@@ -5,7 +5,7 @@ async function getAsignacines(req,res){
     const {id_proyecto} = req.params;
     await
         sequelize.query(`
-            SELECT proyecto.id_proyecto,entregable.id_entregable,entregable.nombre,entregable.descripcion,entregable.fecha_asignacion,
+            SELECT etapa.nombre as etapa,proyecto.id_proyecto,entregable.id_entregable,entregable.nombre,entregable.descripcion,entregable.fecha_asignacion,
             entregable.entregado,entregable.descripcion,entregable.calificacion 
             FROM entregable,proyecto,etapa
             WHERE proyecto.id_proyecto=etapa.id_proyecto AND etapa.id_etapa = entregable.id_etapa 

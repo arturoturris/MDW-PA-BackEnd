@@ -23,17 +23,6 @@ async function subirArchivo(req,res){
           fecha_limite: req.body.fecha,
           id_etapa: cierre.get('id_etapa')
       })
-<<<<<<< Updated upstream
-      
-      const extension = getExtension(archivo.name)
-      const filename = `${cierre.get('id_entregable')}_rubrica_cierre${extension}`
-      const path = `src/archivos/${filename}`
-      
-      await archivo.mv(path)
-      await cierre.update({
-        url_rubrica: filename
-      })
-=======
       if(archivo){
         const extension = getExtension(archivo.name)
         const filename = `${entregable.get('id_entregable')}_rubrica${extension}`
@@ -44,7 +33,6 @@ async function subirArchivo(req,res){
           url_rubrica: filename
         })
       }
->>>>>>> Stashed changes
 
       res.status(201).send({ message : 'Cierre creado' })
       

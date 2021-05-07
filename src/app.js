@@ -1,9 +1,8 @@
 const express = require('express')
 const app = express()
 const morgan = require('morgan')
-const cors = require('cors')
 const fileupload = require('express-fileupload')
-const {API_PORT,API_VERSION} = require('./config/config')
+const {API_PORT,API_VERSION,API_URL,ENV} = require('./config/config')
 
 //CONFIG
 app.set('port',API_PORT)
@@ -23,5 +22,5 @@ require('./models/index')
 
 //SERVER
 app.listen(app.get('port'),(req,res) => {
-    console.log(`API ON PORT ${app.get('port')}`)
+    console.log(`${ENV.toUpperCase()} - API WORKING ON ${API_URL}`)
 })

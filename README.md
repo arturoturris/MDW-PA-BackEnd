@@ -2,9 +2,9 @@
 
 Modelos de desarrollo web - Aplicación de proyectos academicos (Back-end)
 
-## Datos de prueba hasta la V4
+## Datos de prueba hasta la V6
 
-Ejecutar el el script "datos.sql" para poder acceder a todas las funcionalidades implementadas hasta ahora.
+Ejecutar el el script "datos_prueba.sql" para poder acceder a todas las funcionalidades implementadas hasta ahora.
 
 ### NOTA
 

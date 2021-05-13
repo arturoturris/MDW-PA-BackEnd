@@ -2,18 +2,6 @@ const {sequelize} = require('../config/sequelize')
 const {handleError} = require('./error.controller')
 const ModelValidator = require('../validator/ModelValidator')
 
-function existsAlumno(req,res,next){
-    sequelize.models.Alumno.findOne({where: {matricula: req.params.matricula}})
-        .then(alumno => {
-            if(alumno)
-                next()
-            else
-                res.sendStatus(404)
-        })
-        .catch(err =>
-            handleError(req,res,err))   
-}
-
 function existsTarea(req,res,next){
     sequelize.models.Tarea.findOne({where: {id_tarea: req.params.id_tarea}})
         .then(tarea => {
@@ -32,14 +20,12 @@ function buildTarea(body){
         fecha_inicio: body.fecha_inicio,
         fecha_limite: body.fecha_limite || null,
         fecha_fin: body.fecha_fin || null,
-        descripcion: body.descripcion,
-        nrc: body.nrc,
-        coordinador: body.coordinador
+        descripcion: body.descripcion
     })
 }
 
 async function createTarea(req,res){
-    let tarea = buildProyecto(req.body)
+    let tarea = buildTarea(req.body)
 
     try{    
         await sequelize.transaction(async t => {
@@ -80,29 +66,13 @@ function validateTarea(requestType){
     }
 }
 
-function getTareasAlumno(req,res){
-    sequelize.models.Alumno.findOne({
-        attributes: [
-        ],
-        include: {all:true,nested:true},
-        where: {matricula: req.params.matricula}
-    })
-    .then(async tareas => {
-        if(!tareas)
-            return []
-        return await res.json(tareas.Tareas)
-    })
-    .catch(err => handleError(req,res,err))
-}
 
 function findDetalles(req,res){
     const {id_tarea} = req.params;
     
     sequelize.models.Tarea.findOne({
         include: {
-            model: sequelize.models.Materia,
             attributes: [],
-                model: sequelize.models.Profesor,
                 include: {
                     model: sequelize.models.Persona
                 }
@@ -113,9 +83,7 @@ function findDetalles(req,res){
             'fecha_inicio',
             'fecha_limite',
             'fecha_fin',
-            'descripcion',
-            [sequelize.col('Materium.nombre'),'materia'],
-            [sequelize.col('Materium.nrc'),'nrc']
+            'descripcion'
         ],
         where: {id_tarea}
     })
@@ -168,8 +136,6 @@ async function deleteTarea(req,res){
 module.exports = {
     validateTarea,
     createTarea,
-    getTareasAlumno,
-    existsAlumno,
     findDetalles,
     updateTarea,
     existsTarea,

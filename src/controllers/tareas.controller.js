@@ -1,143 +1,90 @@
-const {sequelize} = require('../config/sequelize')
-const {handleError} = require('./error.controller')
-const ModelValidator = require('../validator/ModelValidator')
+const {sequelize} = require('../config/sequelize.js')
+const {DataTypes} = require('sequelize')
 
-function existsTarea(req,res,next){
-    sequelize.models.Tarea.findOne({where: {id_tarea: req.params.id_tarea}})
-        .then(tarea => {
-            if(tarea)
-                next()
-            else
-                res.sendStatus(404)
-        })
-        .catch(err =>
-            handleError(req,res,err))   
-}
-
-function buildTarea(body){
-    return sequelize.models.Tarea.build({
-        nombre_tarea: body.nombre_tarea,
-        fecha_inicio: body.fecha_inicio,
-        fecha_limite: body.fecha_limite || null,
-        fecha_fin: body.fecha_fin || null,
-        descripcion: body.descripcion
-    })
-}
-
-async function createTarea(req,res){
-    let tarea = buildTarea(req.body)
-
-    try{    
-        await sequelize.transaction(async t => {
-            tarea = await tarea.save({transaction: t,validate: false})
-        })
-
-        return res.sendStatus(201)
-    }
-    catch(err){
-        handleError(req,res,err)
-    }
-}
-
-function validateTarea(requestType){
-    return async (req,res,next) => {
-        let tarea = buildTarea(req.body)
-
-        let validator = new ModelValidator()
-
-        try{
-            let skip = ['id_tarea']
-
-            if(requestType === 'put')
-                skip = ['id_tarea']
-
-            await validator.validate(tarea,{skip})
+const Tarea = sequelize.define('Tarea',{
+    id_tarea: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true
+    },
+    nombre_tarea: {
+        type: DataTypes.STRING(45),
+        allowNull: false,
+        validate: {
+            notNull: {
+                args: true,
+                msg: 'El nombre debe ser proporcionado.'
+            },
+            len:{
+                args: [5,45],
+                msg: 'Pocos o demasiados carácteres.'
+            }
         }
-        catch(err){
-            return handleError(req,res,err)
+    },
+    fecha_inicio:{
+        type: DataTypes.DATEONLY,
+        allowNull: false,
+        defaultValue:  DataTypes.DATE.NOW,
+        validate: {
+            notNull: {
+                args: true,
+                msg: 'La fecha de inicio debe ser proporcionada.'
+            },
+            isDate: {
+                args: true,
+                msg: 'La fecha de inicio no contiene un formato válido.'
+            }
         }
-        
-        let validationErrors = validator.getErrors()
+    },
+    fecha_limite:{
+        type: DataTypes.DATEONLY,
+        allowNull: true,
+        validate: {
+            isDate: {
+                args: true,
+                msg: 'La fecha límite no contiene un formato válido.'
+            }
+        }
+    },
+    fecha_fin:{
+        type: DataTypes.DATEONLY,
+        allowNull: true,
+        validate: {
+            isDate: {
+                args: true,
+                msg: 'La fecha fin no contiene un formato válido.'
+            }
+        }
+    },
+    descripcion:{
+        type: DataTypes.STRING(200),
+        allowNull: true,
+        validate: {
+            len: {
+                args: [0,200],
+                msg: 'Pocos o demasiados caracteres.'
+            }
+        }
+    },
 
-        if(validationErrors)
-            return res.status(422).json({errors: validationErrors})
-
-        next()
+},{
+    tableName: 'tarea',
+    timestamps: false,
+    hooks: {
+        beforeSave:(tarea,options) => {
+            tarea.set('nombre_tarea',tarea.get('nombre_tarea').toUpperCase())
+            tarea.set('descripcion',tarea.get('descripcion').toUpperCase())
+        }
     }
-}
+})
 
-
-function findDetalles(req,res){
-    const {id_tarea} = req.params;
+Tarea.associate = function(models){
     
-    sequelize.models.Tarea.findOne({
-        include: {
-            attributes: [],
-                include: {
-                    model: sequelize.models.Persona
-                }
-        },
-        attributes: [
-            'id_tarea',
-            'nombre_tarea',
-            'fecha_inicio',
-            'fecha_limite',
-            'fecha_fin',
-            'descripcion'
-        ],
-        where: {id_tarea}
-    })
-
-    .catch(err => {
-        handleError(req,res,err)
+    models.Tarea.belongsToMany(models.Alumno,{
+        through: models.Equipo,
+        foreignKey: 'id_tarea'
     })
 }
 
-async function updateTarea(req,res){
-    try{
-        let tarea = await sequelize.models.Tarea.findOne({where: {id_tarea: req.params.id_tarea}})
-
-        await sequelize.transaction(async t => {
-            
-            await tarea.update({
-                nombre_tarea: req.body.nombre_tarea,
-                fecha_inicio: req.body.fecha_inicio,
-                fecha_limite: (req.body.fecha_limite || null),
-                fecha_fin: (req.body.fecha_fin || null),
-                descripcion: req.body.descripcion
-            },{
-                transaction: t,
-                validate: false
-            })
-        })
-
-        res.sendStatus(200)
-    }
-    catch(err){
-        handleError(req,res,err)
-    }
-}
-
-async function deleteTarea(req,res){
-    try{
-        const tarea = await sequelize.models.Tarea.findOne({where: {id_tarea: req.params.id_tarea}})
-
-        await sequelize.transaction(async t => {
-            await tarea.destroy({transaction: t})
-        })
-
-        res.sendStatus(200)
-    }
-    catch(err){
-        handleError(req,res,err)
-    }
-}
-
-module.exports = {
-    validateTarea,
-    createTarea,
-    findDetalles,
-    updateTarea,
-    existsTarea,
-    deleteTarea
-}
+module.exports = Tarea

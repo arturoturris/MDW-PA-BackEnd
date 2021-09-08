@@ -406,7 +406,7 @@ INSERT INTO notificacion(id_usuario,descripcion,fecha_notificacion,leida,url) VA
 (4,'PERLA HERNANDEZ ha asignado un nuevo entregable.',NOW(),0,'/alumno/misProyectos/2/etapas/4/entregables/3'),
 (4,'PERLA HERNANDEZ ha asignado un nuevo entregable.',NOW(),1,'/alumno/misProyectos/2/etapas/4/entregables/4');
 
-/*TAREAS*/
-INSERT INTO tarea(id_tarea,nombre_tarea,fecha_inicio,fecha_limite,fecha_fin,descripcion) VALUES
-('1','Corregir modelo entidad-relación','2021-04-14','2021-05-14',null,'Se ha asignado la tarea de completar el modelo ER'),
-('2','Crear repositorio','2021-04-16','2021-05-16',null,'Crear el repositorio para continuar con el proyecto en Git-Hub');
+-- /*TAREAS*/
+-- INSERT INTO tarea(id_tarea,nombre_tarea,fecha_inicio,fecha_limite,fecha_fin,descripcion) VALUES
+-- ('1','Corregir modelo entidad-relación','2021-04-14','2021-05-14',null,'Se ha asignado la tarea de completar el modelo ER'),
+-- ('2','Crear repositorio','2021-04-16','2021-05-16',null,'Crear el repositorio para continuar con el proyecto en Git-Hub');
